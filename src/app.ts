@@ -26,6 +26,7 @@ app.use(
   cors({
     origin: [
       config.clients_url,
+      config.backend_url,
     ],
     credentials: true,
   })
