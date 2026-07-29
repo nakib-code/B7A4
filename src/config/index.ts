@@ -19,5 +19,7 @@ export default {
     stripe_webhook_secret : process.env.STRIPE_WEBHOOK_SECRET!,
     SSLCOMMERZ_STORE_ID:process.env.SSLCOMMERZ_STORE_ID!,
     SSLCOMMERZ_STORE_PASSWORD:process.env.SSLCOMMERZ_STORE_PASSWORD!,
-    SSLCOMMERZ_IS_LIVE:process.env.SSLCOMMERZ_IS_LIVE === "true"
+    SSLCOMMERZ_IS_LIVE:process.env.SSLCOMMERZ_IS_LIVE === "true",
+    backend_url: process.env.BACKEND_URL!,
+    clients_url: process.env.CLIENT_URL!,
 }
