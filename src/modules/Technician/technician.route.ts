@@ -5,6 +5,15 @@ import { TechnicianController } from "./technician.controller";
 
 const router = Router();
 
+
+router.get(
+  "/get-all",
+  TechnicianController.getAllTechnicians
+);
+
+
+export default router;
+
 router.put(
   "/profile",
   auth(Role.TECHNICIAN),

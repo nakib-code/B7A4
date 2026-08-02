@@ -74,11 +74,11 @@ const createPayment = async (customerId: string, payload: TCreatePayment) => {
 
     tran_id: transactionId,
 
-    success_url: `${config.app_url}/api/payments/success`,
+    success_url: `${config.clients_url}/payment/success`,
 
-    fail_url: `${config.app_url}/api/payments/fail`,
+    fail_url: `${config.clients_url}/payment/fail`,
 
-    cancel_url: `${config.app_url}/api/payments/cancel`,
+    cancel_url: `${config.clients_url}/payment/cancel`,
 
     ipn_url: `${config.app_url}/api/payments/ipn`,
 

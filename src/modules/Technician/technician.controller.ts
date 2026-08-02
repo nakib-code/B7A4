@@ -3,17 +3,15 @@ import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { TechnicianService } from "./technician.service";
 
-const updateProfile = catchAsync(async (req: any, res: Response) => {
+const getAllTechnicians = catchAsync(async (req: any, res: Response) => {
   
-  const result = await TechnicianService.updateProfile(
-    req.user.id,
-    req.body
-  );
+  const result = await TechnicianService.getAllTechniciansFromDB();
+
 
   sendResponse(res, {
     success: true,
     statusCode: 200,
-    message: "Technician profile updated successfully",
+    message: "Technicians retrieved successfully",
     data: result,
   });
 });
@@ -31,6 +29,21 @@ const updateAvailability = catchAsync(async (req: any, res: Response) => {
     data: result,
   });
 });
+const updateProfile = catchAsync(async (req: any, res: Response) => {
+  
+  const result = await TechnicianService.updateProfile(
+    req.user.id,
+    req.body
+  );
+
+  sendResponse(res, {
+    success: true,
+    statusCode: 200,
+    message: "Technician profile updated successfully",
+    data: result,
+  });
+});
+;
 
 const getBookings = catchAsync(async (req: any, res: Response) => {
   const result = await TechnicianService.getBookings(req.user.id);
@@ -61,6 +74,7 @@ const updateBookingStatus = catchAsync(
 );
 
 export const TechnicianController = {
+  getAllTechnicians,
   updateProfile,
   updateAvailability,
   getBookings,

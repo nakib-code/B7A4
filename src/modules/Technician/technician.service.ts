@@ -6,9 +6,33 @@ import {
   TUpdateTechnicianProfile,
 } from "./technician.interface";
 
+export const getAllTechniciansFromDB = async () => {
+  return prisma.user.findMany({
+    where: {
+      role: "TECHNICIAN",
+      status: "ACTIVE",
+    },
+
+    select: {
+      id: true,
+
+      name: true,
+
+      email: true,
+
+      phone: true,
+
+      profileImg: true,
+
+      role: true,
+
+      status: true,
+    },
+  });
+};
 const updateProfile = async (
   userId: string,
-  payload: TUpdateTechnicianProfile
+  payload: TUpdateTechnicianProfile,
 ) => {
   const profile = await prisma.technicianProfile.findUnique({
     where: {
@@ -32,7 +56,7 @@ const updateProfile = async (
 
 const updateAvailability = async (
   userId: string,
-  payload: TUpdateAvailability
+  payload: TUpdateAvailability,
 ) => {
   const technician = await prisma.technicianProfile.findUnique({
     where: {
@@ -124,7 +148,7 @@ const getBookings = async (userId: string) => {
 const updateBookingStatus = async (
   userId: string,
   bookingId: string,
-  payload: TUpdateBookingStatus
+  payload: TUpdateBookingStatus,
 ) => {
   const booking = await prisma.booking.findFirst({
     where: {
@@ -167,6 +191,7 @@ const updateBookingStatus = async (
 };
 
 export const TechnicianService = {
+  getAllTechniciansFromDB,
   updateProfile,
   updateAvailability,
   getBookings,
