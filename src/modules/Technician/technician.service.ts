@@ -61,7 +61,7 @@ const getMyProfile = async (userId: string) => {
 
 const updateProfile = async (
   userId: string,
-  payload: TUpdateTechnicianProfile,
+  payload: TUpdateTechnicianProfile
 ) => {
   const profile = await prisma.technicianProfile.findUnique({
     where: {
@@ -77,14 +77,16 @@ const updateProfile = async (
 
   const { profileImg, ...profileData } = payload;
 
-  await prisma.user.update({
-    where: {
-      id: userId,
-    },
-    data: {
-      ...(profileImg && { profileImg }),
-    },
-  });
+  if (profileImg) {
+    await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        profileImg,
+      },
+    });
+  }
 
   return prisma.technicianProfile.update({
     where: {
@@ -99,6 +101,7 @@ const updateProfile = async (
           email: true,
           phone: true,
           profileImg: true,
+          role: true,
         },
       },
     },
