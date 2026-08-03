@@ -12,14 +12,16 @@ const accessCookieOptions = {
   httpOnly: true,
   secure: isProduction,
   sameSite: isProduction ? ("none" as const) : ("lax" as const),
-  maxAge: 1000 * 60 * 60 * 24,
+  path: "/",
+  maxAge: 1000 * 60 * 60 * 24, // 1 day
 };
 
 const refreshCookieOptions = {
   httpOnly: true,
   secure: isProduction,
   sameSite: isProduction ? ("none" as const) : ("lax" as const),
-  maxAge: 1000 * 60 * 60 * 24 * 7,
+  path: "/",
+  maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
 };
 
 const register = catchAsync(async (req: Request, res: Response) => {
@@ -27,7 +29,7 @@ const register = catchAsync(async (req: Request, res: Response) => {
 
   sendResponse(res, {
     success: true,
-    statusCode: 201,
+    statusCode: httpStatus.CREATED,
     message: AUTH_MESSAGE.REGISTER_SUCCESS,
     data: result,
   });
@@ -42,9 +44,11 @@ const login = catchAsync(async (req: Request, res: Response) => {
 
   sendResponse(res, {
     success: true,
-    statusCode: 200,
+    statusCode: httpStatus.OK,
     message: AUTH_MESSAGE.LOGIN_SUCCESS,
     data: {
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
       user: result.user,
     },
   });
@@ -54,7 +58,9 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
-    throw new Error("Refresh token is required");
+    const error: any = new Error("Refresh token is required");
+    error.statusCode = httpStatus.UNAUTHORIZED;
+    throw error;
   }
 
   const result = await AuthService.refreshToken(refreshToken);
@@ -65,56 +71,41 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
     success: true,
     statusCode: httpStatus.OK,
     message: "Token refreshed successfully",
-    data: null,
+    data: {
+      accessToken: result.accessToken,
+    },
   });
 });
 
+const logout = catchAsync(async (_req: Request, res: Response) => {
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    path: "/",
+  });
 
-export const logout = async (
-  req: Request,
-  res: Response
-) => {
-  try {
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    path: "/",
+  });
 
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
-
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
-
-
-    res.status(200).json({
-      success: true,
-      message: "Logout successful",
-    });
-
-
-  } catch (error) {
-
-    res.status(500).json({
-      success: false,
-      message: "Logout failed",
-    });
-
-  }
-};
-
-
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: "Logout successful",
+    data: null,
+  });
+});
 
 const getMe = catchAsync(async (req: any, res: Response) => {
   const result = await AuthService.getMe(req.user.id);
 
   sendResponse(res, {
     success: true,
-    statusCode: 200,
+    statusCode: httpStatus.OK,
     message: AUTH_MESSAGE.PROFILE_SUCCESS,
     data: result,
   });
