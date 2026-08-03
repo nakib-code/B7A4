@@ -2,8 +2,6 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { Application } from "express";
 
-import config from "./config";
-
 import { AdminRoutes } from "./modules/Admin/admin.route";
 import { AuthRoutes } from "./modules/Auth/auth.route";
 import { BookingRoutes } from "./modules/booking/booking.route";
@@ -18,16 +16,74 @@ import { notFound } from "./middleware/notFound";
 
 const app: Application = express();
 
+
+// ===============================
+// Middlewares
+// ===============================
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+
+// ===============================
+// CORS Configuration
+// ===============================
+
+const allowedOrigins = [
+  "http://localhost:3000",
+
+  // Production frontend
+  "https://fixitnow-eta-blush.vercel.app",
+
+  // Current Vercel deployment
+  "https://fixitnow-1dfy0fdvy-ahmed-nakibs-projects.vercel.app",
+];
+
+
 app.use(
   cors({
-    origin: "https://fixitnow-eta-blush.vercel.app",
+    origin: (origin, callback) => {
+
+      // allow server-to-server / Postman requests
+      if (!origin) {
+        return callback(null, true);
+      }
+
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+
+      return callback(
+        new Error("Not allowed by CORS")
+      );
+
+    },
+
     credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
+
+
+// ===============================
+// Root Route
+// ===============================
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -36,16 +92,35 @@ app.get("/", (req, res) => {
   });
 });
 
+
+// ===============================
+// API Routes
+// ===============================
+
 app.use("/api/auth", AuthRoutes);
+
 app.use("/api/categories", CategoryRoutes);
+
 app.use("/api/technician", TechnicianRoutes);
+
 app.use("/api/bookings", BookingRoutes);
+
 app.use("/api/services", ServiceRoutes);
+
 app.use("/api/payments", PaymentRoutes);
+
 app.use("/api/admin", AdminRoutes);
+
 app.use("/api/reviews", ReviewRoutes);
 
+
+// ===============================
+// Error Handler
+// ===============================
+
 app.use(notFound);
+
 app.use(globalErrorHandler);
+
 
 export default app;
