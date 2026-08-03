@@ -136,5 +136,4 @@ export const AdminController = {
   updateUserStatus,
   getAllBookings,
   getCategories,
-  logout
 };

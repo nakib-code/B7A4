@@ -38,11 +38,6 @@ router.get(
   AdminController.getCategories
 );
 
-router.post(
-  "/logout",
-  AdminController.logout
-);
-
 
 
 export const AdminRoutes = router;
