@@ -69,26 +69,45 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-const logout = catchAsync(async (_req: Request, res: Response) => {
-  res.clearCookie("accessToken", {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-  });
 
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: isProduction ? "none" : "lax",
-  });
+export const logout = async (
+  req: Request,
+  res: Response
+) => {
+  try {
 
-  sendResponse(res, {
-    success: true,
-    statusCode: 200,
-    message: "Logout successful",
-    data: null,
-  });
-});
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+
+
+    res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+
+
+  } catch (error) {
+
+    res.status(500).json({
+      success: false,
+      message: "Logout failed",
+    });
+
+  }
+};
+
+
 
 const getMe = catchAsync(async (req: any, res: Response) => {
   const result = await AuthService.getMe(req.user.id);
