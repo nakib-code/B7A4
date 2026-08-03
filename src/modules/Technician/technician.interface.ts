@@ -1,9 +1,9 @@
-export interface TUpdateTechnicianProfile {
+export type TUpdateTechnicianProfile = {
   bio?: string;
   experience?: number;
-  hourlyRate?: number;
   location?: string;
-}
+  profileImg?: string;
+};
 
 export interface TUpdateAvailability {
   day: string;

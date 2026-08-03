@@ -1,31 +1,38 @@
 import { Router } from "express";
-import auth from "../../middleware/auth";
 import { Role } from "../../../generated/prisma/enums";
+
+import auth from "../../middleware/auth";
 import { TechnicianController } from "./technician.controller";
 
 const router = Router();
 
-
+// Public
 router.get(
-  "/get-all",
+  "/",
   TechnicianController.getAllTechnicians
 );
 
+// Technician Profile
+router.get(
+  "/profile",
+  auth(Role.TECHNICIAN),
+  TechnicianController.getMyProfile
+);
 
-export default router;
-
-router.put(
+router.patch(
   "/profile",
   auth(Role.TECHNICIAN),
   TechnicianController.updateProfile
 );
 
+// Availability
 router.put(
   "/availability",
   auth(Role.TECHNICIAN),
   TechnicianController.updateAvailability
 );
 
+// Bookings
 router.get(
   "/bookings",
   auth(Role.TECHNICIAN),

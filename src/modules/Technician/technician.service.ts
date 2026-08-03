@@ -30,6 +30,35 @@ export const getAllTechniciansFromDB = async () => {
     },
   });
 };
+
+const getMyProfile = async (userId: string) => {
+  const profile = await prisma.technicianProfile.findUnique({
+    where: {
+      userId,
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          profileImg: true,
+        },
+      },
+    },
+  });
+
+  if (!profile) {
+    const error: any = new Error("Technician profile not found");
+    error.statusCode = httpStatus.NOT_FOUND;
+    throw error;
+  }
+
+  return profile;
+};
+
+
 const updateProfile = async (
   userId: string,
   payload: TUpdateTechnicianProfile,
@@ -46,11 +75,33 @@ const updateProfile = async (
     throw error;
   }
 
+  const { profileImg, ...profileData } = payload;
+
+  await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      ...(profileImg && { profileImg }),
+    },
+  });
+
   return prisma.technicianProfile.update({
     where: {
       userId,
     },
-    data: payload,
+    data: profileData,
+    include: {
+      user: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phone: true,
+          profileImg: true,
+        },
+      },
+    },
   });
 };
 
@@ -196,4 +247,5 @@ export const TechnicianService = {
   updateAvailability,
   getBookings,
   updateBookingStatus,
+  getMyProfile
 };
