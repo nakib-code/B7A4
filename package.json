@@ -40,5 +40,11 @@
     "sslcommerz-lts": "^1.2.0",
     "stripe": "^22.3.0",
     "uuid": "^14.0.1"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.8.0": true,
+    "prisma@7.8.0": true,
+    "esbuild@0.28.1": true,
+    "fsevents@2.3.3": true
   }
 }
